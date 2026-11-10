@@ -92,6 +92,39 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 
 ## 6. Diagrama de Casos de Uso
 
+![Diagrama de Casos de Uso](diagramas/casos_de_uso.png)
+
+> Fonte do diagrama (PlantUML): [casos_de_uso.puml](diagramas/casos_de_uso.puml)
+
+**Atores**
+
+| Ator | Descrição |
+|---|---|
+| Jogador | Usuário que se inscreve nas partidas, cancela sua presença, informa pagamentos e acompanha seu perfil. |
+| Organizador | Jogador responsável por criar e gerenciar a partida: sorteia os times, confirma pagamentos e registra o placar. Herda todos os casos de uso do Jogador (generalização). |
+
+**Rastreabilidade: casos de uso × requisitos**
+
+| Caso de uso | Ator(es) | Requisitos / Regras |
+|---|---|---|
+| UC01 - Cadastrar-se | Jogador | RF01 |
+| UC02 - Autenticar-se | Jogador | RF02 |
+| UC03 - Criar partida | Organizador | RF03 |
+| UC04 - Gerar link de convite | — (incluído em UC03) | RF04 |
+| UC05 - Cancelar partida | Organizador | RF05 |
+| UC06 - Visualizar lista da partida | Jogador | RF10 |
+| UC07 - Confirmar presença | Jogador | RF06, RN01, RN05 |
+| UC08 - Entrar como reserva | — (estende UC07) | RF07, RN01 |
+| UC09 - Cancelar presença | Jogador | RF08, RN04 |
+| UC10 - Promover reserva | — (estende UC09) | RF09, RN02 |
+| UC11 - Sortear times | Organizador | RF11, RN05, RN06 |
+| UC12 - Calcular valor por jogador | — (incluído em UC11) | RN03 |
+| UC13 - Registrar placar | Organizador | RF15 |
+| UC14 - Informar pagamento | Jogador | RF12 |
+| UC15 - Confirmar pagamento | Organizador | RF13 |
+| UC16 - Consultar pendências | Organizador | RF14 |
+| UC17 - Visualizar perfil | Jogador | RF16 |
+
 ## 7. Documentação dos Casos de Uso
 
 ---

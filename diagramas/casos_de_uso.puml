@@ -1,0 +1,74 @@
+@startuml casos_de_uso
+title Diagrama de Casos de Uso — Organizador de futebol amador
+
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam ArrowColor #58595B
+skinparam ActorBorderColor #58595B
+skinparam ActorBackgroundColor #EAF4EE
+skinparam usecase {
+  BackgroundColor #EAF4EE
+  BorderColor #6FAE8C
+}
+
+actor "Jogador" as Jogador
+actor "Organizador" as Organizador
+
+Organizador -|> Jogador
+
+rectangle "Organizador de futebol amador" {
+  ' Conta
+  usecase "UC01 - Cadastrar-se" as UC01
+  usecase "UC02 - Autenticar-se" as UC02
+
+  ' Partida
+  usecase "UC03 - Criar partida" as UC03
+  usecase "UC04 - Gerar link de convite" as UC04
+  usecase "UC05 - Cancelar partida" as UC05
+  usecase "UC06 - Visualizar lista da partida" as UC06
+
+  ' Presença
+  usecase "UC07 - Confirmar presença" as UC07
+  usecase "UC08 - Entrar como reserva" as UC08
+  usecase "UC09 - Cancelar presença" as UC09
+  usecase "UC10 - Promover reserva" as UC10
+
+  ' Jogo
+  usecase "UC11 - Sortear times" as UC11
+  usecase "UC12 - Calcular valor por jogador" as UC12
+  usecase "UC13 - Registrar placar" as UC13
+
+  ' Pagamento
+  usecase "UC14 - Informar pagamento" as UC14
+  usecase "UC15 - Confirmar pagamento" as UC15
+  usecase "UC16 - Consultar pendências" as UC16
+
+  ' Perfil
+  usecase "UC17 - Visualizar perfil" as UC17
+}
+
+' Jogador
+Jogador -- UC01
+Jogador -- UC02
+Jogador -- UC06
+Jogador -- UC07
+Jogador -- UC09
+Jogador -- UC14
+Jogador -- UC17
+
+' Organizador (também herda todos os casos do Jogador)
+Organizador -- UC03
+Organizador -- UC05
+Organizador -- UC11
+Organizador -- UC13
+Organizador -- UC15
+Organizador -- UC16
+
+' Relacionamentos
+UC03 ..> UC04 : <<include>>
+UC11 ..> UC12 : <<include>>
+UC08 ..> UC07 : <<extend>>\n[titulares completos]
+UC10 ..> UC09 : <<extend>>\n[titular cancelou e há reservas]
+
+@enduml
