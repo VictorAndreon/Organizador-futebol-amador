@@ -1,0 +1,58 @@
+@startuml classes_conceitual
+title Diagrama de Classes — Modelo Conceitual
+
+hide circle
+hide methods
+skinparam ArrowColor #58595B
+skinparam class {
+  BackgroundColor #EAF4EE
+  BorderColor #6FAE8C
+  HeaderBackgroundColor #6FAE8C
+  HeaderFontColor #FFFFFF
+}
+
+class Jogador {
+  nome
+  telefone
+  email
+  senha
+  posicaoPreferida
+}
+
+class Partida {
+  dataHora
+  local
+  modalidade
+  vagasTitulares
+  vagasReservas
+  valorQuadra
+  linkConvite
+  situacao
+}
+
+class Inscricao {
+  dataHoraInscricao
+  tipo
+  situacao
+}
+
+class Time {
+  nome
+  gols
+}
+
+class Pagamento {
+  valor
+  comprovante
+  situacao
+  dataConfirmacao
+}
+
+Jogador "1" -- "0..*" Partida : organiza >
+Jogador "1" -- "0..*" Inscricao : realiza >
+Partida "1" -- "0..*" Inscricao : possui >
+Partida "1" -- "0..*" Time : é dividida em >
+Time "0..1" -- "0..*" Inscricao : compõe <
+Inscricao "1" -- "0..1" Pagamento : gera >
+
+@enduml

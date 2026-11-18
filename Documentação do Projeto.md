@@ -478,6 +478,39 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 
 ## 8. Diagrama de Classes — Modelo Conceitual
 
+![Diagrama de Classes — Modelo Conceitual](diagramas/classes_conceitual.png)
+
+> Fonte do diagrama (PlantUML): [classes_conceitual.puml](diagramas/classes_conceitual.puml)
+
+O modelo conceitual representa as entidades do domínio e seus relacionamentos, sem detalhes de implementação (tipos, métodos e navegabilidade são definidos no modelo de domínio).
+
+**Classes**
+
+| Classe | Descrição | Origem |
+|---|---|---|
+| Jogador | Pessoa cadastrada no sistema. Um jogador que cria partidas atua como organizador delas. | RF01, RF02 |
+| Partida | Jogo marcado em uma data, horário e local, com limite de vagas e valor da quadra. | RF03, RF04, RF05 |
+| Inscricao | Participação de um jogador em uma partida, como titular ou reserva. Guarda a data e a hora da inscrição, que definem a ordem da fila de reservas. | RF06–RF09, RN01, RN02 |
+| Time | Equipe formada no sorteio, com o número de gols marcados na partida. | RF11, RF15, RN06 |
+| Pagamento | Parte do valor da quadra devida por um inscrito, com o comprovante e a situação (pendente, informado ou confirmado). | RF12–RF14, RN03, RN04 |
+
+**Associações**
+
+| Associação | Multiplicidade | Significado |
+|---|---|---|
+| Jogador *organiza* Partida | 1 — 0..* | Toda partida tem um organizador; um jogador pode organizar nenhuma ou várias partidas. |
+| Jogador *realiza* Inscricao | 1 — 0..* | Cada inscrição pertence a um jogador; um jogador pode se inscrever em várias partidas. |
+| Partida *possui* Inscricao | 1 — 0..* | Cada inscrição é de uma partida; a partida começa sem inscritos. |
+| Partida *é dividida em* Time | 1 — 0..* | Os times só existem após o sorteio, por isso a partida pode ter zero times. |
+| Inscricao *compõe* Time | 0..* — 0..1 | Um time é composto por inscrições de titulares; reservas e inscrições anteriores ao sorteio não pertencem a nenhum time. |
+| Inscricao *gera* Pagamento | 1 — 0..1 | O pagamento é criado no sorteio (RN03), por isso a inscrição pode ainda não ter pagamento. |
+
+**Decisões de modelagem**
+
+- **Organizador não é uma classe separada.** No diagrama de casos de uso, Organizador é uma especialização de Jogador. No domínio, ser organizador é um papel, representado pela associação *organiza*: o mesmo jogador pode organizar uma partida e jogar como inscrito em outra.
+- **Inscricao é uma classe, e não apenas uma lista de jogadores na partida**, porque a participação tem dados próprios (data e hora, tipo e situação) e se relaciona com Time e Pagamento.
+- **O pagamento é por inscrição, e não por jogador**, porque o valor é calculado para cada partida (RN03).
+
 ## 9. Diagrama de Classes — Modelo de Domínio
 
 ## 10. Segundo Diagrama UML
