@@ -1,0 +1,124 @@
+@startuml classes_dominio
+title Diagrama de Classes — Modelo de Domínio
+
+hide circle
+skinparam ArrowColor #58595B
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #EAF4EE
+  BorderColor #6FAE8C
+  HeaderBackgroundColor #6FAE8C
+  HeaderFontColor #FFFFFF
+}
+
+class Jogador {
+  - nome : String
+  - telefone : String
+  - email : String
+  - senhaHash : String
+  - posicaoPreferida : Posicao
+  + autenticar(email : String, senha : String) : boolean
+  + criarPartida(dataHora : DateTime, local : String, modalidade : Modalidade, vagasTitulares : int, vagasReservas : int, valorQuadra : Decimal) : Partida
+  + consultarHistorico() : List<Partida>
+  + consultarPendencias() : List<Pagamento>
+}
+
+class Partida {
+  - dataHora : DateTime
+  - local : String
+  - modalidade : Modalidade
+  - vagasTitulares : int
+  - vagasReservas : int
+  - valorQuadra : Decimal
+  - linkConvite : String
+  - situacao : SituacaoPartida
+  + gerarLinkConvite() : String
+  + inscrever(jogador : Jogador) : Inscricao
+  + cancelarInscricao(inscricao : Inscricao) : void
+  + promoverReserva() : Inscricao
+  + vagasRestantes() : int
+  + sortearTimes() : List<Time>
+  + calcularValorPorJogador() : Decimal
+  + encerrar() : void
+  + cancelar() : void
+  + listarPendencias() : List<Pagamento>
+}
+
+class Inscricao {
+  - dataHoraInscricao : DateTime
+  - tipo : TipoInscricao
+  - situacao : SituacaoInscricao
+  + promover() : void
+  + cancelar() : void
+}
+
+class Time {
+  - nome : String
+  - gols : int
+  + adicionarJogador(inscricao : Inscricao) : void
+  + registrarGols(gols : int) : void
+}
+
+class Pagamento {
+  - valor : Decimal
+  - comprovante : String
+  - situacao : SituacaoPagamento
+  - dataConfirmacao : Date
+  + informar(comprovante : String) : void
+  + confirmar() : void
+  + recusar() : void
+  + registrarManualmente() : void
+}
+
+enum Posicao <<enumeration>> {
+  LINHA
+  GOLEIRO
+}
+
+enum Modalidade <<enumeration>> {
+  FUTSAL
+  SOCIETY
+  CAMPO
+}
+
+enum SituacaoPartida <<enumeration>> {
+  INSCRICOES_ABERTAS
+  LOTADA
+  TIMES_SORTEADOS
+  ENCERRADA
+  CANCELADA
+}
+
+enum TipoInscricao <<enumeration>> {
+  TITULAR
+  RESERVA
+}
+
+enum SituacaoInscricao <<enumeration>> {
+  ATIVA
+  CANCELADA
+}
+
+enum SituacaoPagamento <<enumeration>> {
+  PENDENTE
+  INFORMADO
+  CONFIRMADO
+}
+
+' Associações (sem seta = navegável nos dois sentidos)
+Jogador "1" -- "0..*" Partida : organiza >
+Jogador "1" -- "0..*" Inscricao : realiza >
+Partida "1" *-- "0..*" Inscricao : possui >
+Partida "1" *--> "0..*" Time : é dividida em >
+Time "0..1" -- "0..*" Inscricao : compõe <
+Inscricao "1" *--> "0..1" Pagamento : gera >
+
+' Enumerações usadas pelas classes
+Jogador ..> Posicao
+Partida ..> Modalidade
+Partida ..> SituacaoPartida
+Inscricao ..> TipoInscricao
+Inscricao ..> SituacaoInscricao
+Pagamento ..> SituacaoPagamento
+
+@enduml

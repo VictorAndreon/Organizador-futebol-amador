@@ -14,6 +14,10 @@ O sistema é voltado para organizadores e jogadores de grupos de futebol amador.
 
 As principais funcionalidades são: criação das partidas, inscrição de jogadores, com lista de espera quando a partida lotar, sorteio automático para a divisão dos times, registro e controle de pagamentos, placares das partidas e perfis de jogadores.
 
+## Diagrama de classes
+
+![Diagrama de Classes — Modelo de Domínio](diagramas/classes_dominio.png)
+
 ## Documentação
 
 A documentação completa de análise e projeto (requisitos, casos de uso, diagramas e protótipo) está em [Documentação do Projeto.md](Documentação%20do%20Projeto.md).

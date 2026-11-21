@@ -472,6 +472,60 @@ O modelo conceitual representa as entidades do domínio e seus relacionamentos, 
 
 ## 9. Diagrama de Classes — Modelo de Domínio
 
+![Diagrama de Classes — Modelo de Domínio](diagramas/classes_dominio.png)
+
+> Fonte do diagrama (PlantUML): [classes_dominio.puml](diagramas/classes_dominio.puml)
+
+O modelo de domínio detalha o modelo conceitual com os tipos dos atributos, os métodos relevantes, as multiplicidades e a navegabilidade das associações.
+
+**Convenções**
+
+- `-` atributo privado; `+` método público.
+- Associação **sem seta**: navegável nos dois sentidos. Associação **com seta**: navegável apenas no sentido da seta.
+- **Losango preenchido** (composição): a parte só existe enquanto o todo existir. Inscrições e times pertencem a uma partida, e o pagamento pertence a uma inscrição.
+- Os valores fixos dos atributos (posição, modalidade e situações) são representados por **enumerações**.
+- `Decimal` é usado para valores monetários, evitando erros de arredondamento de ponto flutuante (RN03).
+
+**Navegabilidade**
+
+| Associação | Navegabilidade | Justificativa |
+|---|---|---|
+| Jogador *organiza* Partida | Bidirecional | A partida precisa saber quem é seu organizador para validar as permissões (RNF06); o organizador precisa listar suas partidas para consultar pendências (UC16). |
+| Jogador *realiza* Inscricao | Bidirecional | A lista da partida exibe o nome de cada inscrito (UC06); o perfil do jogador lista suas inscrições para montar o histórico (UC17). |
+| Partida *possui* Inscricao | Bidirecional (composição) | A partida controla vagas e fila de reservas a partir das inscrições (UC07–UC10); o histórico do jogador precisa chegar à partida a partir da inscrição (UC17). |
+| Partida *é dividida em* Time | Partida → Time (composição) | Os times são acessados sempre a partir da partida (UC06, UC11, UC13); o time não precisa conhecer a partida. |
+| Time *compõe* Inscricao | Bidirecional | O time lista seus jogadores (UC06); a inscrição precisa saber seu time para o reserva promovido assumir a vaga no mesmo time (UC10, FA01) e para o histórico (UC17). |
+| Inscricao *gera* Pagamento | Inscricao → Pagamento (composição) | O pagamento é sempre acessado a partir da inscrição (UC14–UC16). |
+
+**Métodos × casos de uso**
+
+| Classe | Método | Caso de uso |
+|---|---|---|
+| Jogador | `autenticar()` | UC02 |
+| Jogador | `criarPartida()` | UC03 |
+| Jogador | `consultarHistorico()` | UC17 |
+| Jogador | `consultarPendencias()` | UC14, UC17 |
+| Partida | `gerarLinkConvite()` | UC04 |
+| Partida | `inscrever()` | UC07, UC08 |
+| Partida | `cancelarInscricao()` | UC09 |
+| Partida | `promoverReserva()` | UC10 |
+| Partida | `vagasRestantes()` | UC06, UC07 |
+| Partida | `sortearTimes()` | UC11 |
+| Partida | `calcularValorPorJogador()` | UC12 |
+| Partida | `encerrar()` | UC13 |
+| Partida | `cancelar()` | UC05 |
+| Partida | `listarPendencias()` | UC16 |
+| Inscricao | `promover()` | UC10 |
+| Inscricao | `cancelar()` | UC09 |
+| Time | `adicionarJogador()` | UC10, UC11 |
+| Time | `registrarGols()` | UC13 |
+| Pagamento | `informar()` | UC14 |
+| Pagamento | `confirmar()` | UC15 |
+| Pagamento | `recusar()` | UC15 |
+| Pagamento | `registrarManualmente()` | UC15 |
+
+O cadastro (UC01) não aparece como método de Jogador porque é a própria criação do objeto (construtor).
+
 ## 10. Segundo Diagrama UML
 
 ---
