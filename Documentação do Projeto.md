@@ -34,6 +34,16 @@ Os principais envolvidos são o **organizador**, que cria a lista, contata a qua
 
 O propósito é auxiliar e facilitar a manutenção e organização dessas partidas, fazendo com que o controle da lista seja mais fácil, tanto no controle dos pagamentos quanto no sorteio dos times, registros das partidas, etc. Espera-se que o organizador tenha uma visão clara de quem confirmou, quem desistiu e quem está devendo, sem depender de mensagens soltas no WhatsApp, e que as vagas deixadas por desistências sejam preenchidas automaticamente pelos reservas.
 
+### 1.4 Escopo do Sistema
+
+**Público-alvo:** organizadores e jogadores de grupos de futebol amador (futsal, society e campo).
+
+**Contexto de uso:** o organizador cria a partida no sistema e compartilha o link de convite no grupo de WhatsApp; os jogadores acessam pelo celular para confirmar presença, acompanhar a lista e informar seus pagamentos.
+
+**Funcionalidades contempladas:** cadastro e autenticação de usuários; criação e cancelamento de partidas com link de convite; confirmação e cancelamento de presença, com fila de reservas e promoção automática; sorteio aleatório dos times; cálculo do valor por jogador; registro e controle de pagamentos; registro do placar; perfil do jogador com histórico e pendências.
+
+**Fora do escopo:** pagamento online (Pix, cartão ou integração bancária); reserva de quadra junto ao dono do espaço; organização de campeonatos; notificações (e-mail, push ou WhatsApp); grupos fixos e mensalistas. Esses itens são candidatos a melhorias futuras.
+
 ## 2. Requisitos Funcionais
 
 | ID | Descrição | Prioridade | Depende de |
@@ -74,7 +84,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | RN01 | Uma partida não aceita mais titulares do que o número de vagas definido. Com os titulares completos, novos inscritos entram como reservas; com as reservas também completas, novas inscrições não são aceitas. | Alta | RF06, RF07 |
 | RN02 | A fila de reservas segue a ordem de inscrição: quem se inscreveu primeiro é o primeiro a ser promovido a titular. | Alta | RF07, RF09 |
 | RN03 | O valor a ser pago por cada jogador é o valor total da quadra dividido pelo número de inscritos (titulares e reservas) no momento do sorteio dos times, arredondado para cima no centavo. Os reservas também pagam, pois revezam com os titulares durante a partida. | Alta | RF03, RF11, RF13 |
-| RN04 | O jogador que cancelar sua presença com menos de 12 horas de antecedência e cuja vaga não for preenchida por outro jogador continua responsável pelo pagamento da sua parte. | Média | RF08, RF09, RN03 |
+| RN04 | O jogador que cancelar sua presença após o sorteio dos times continua responsável pelo pagamento da sua parte, pois o valor por jogador já foi calculado. | Média | RF08, RF11, RN03 |
 | RN05 | Após o sorteio dos times, as inscrições da partida são encerradas e não são aceitas novas confirmações. | Alta | RF06, RF11 |
 | RN06 | No sorteio, os jogadores com posição preferida de goleiro devem ser distribuídos um por time, enquanto houver goleiros disponíveis. | Média | RF01, RF11 |
 
@@ -283,7 +293,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **FLUXOS ALTERNATIVOS** | |
 | **FA01 — Era titular e há reservas** | No passo 5, o sistema executa o UC10 - Promover reserva (**extend**). |
 | **FA02 — Era titular e não há reservas** | No passo 5, a vaga de titular fica livre e, se a partida estava *Lotada*, volta para *Inscrições abertas*. |
-| **FA03 — Cancelamento em cima da hora** | No passo 2, se faltarem menos de 12 horas para a partida, o sistema avisa que, se a vaga não for preenchida, o jogador continua responsável pelo pagamento da sua parte (RN04). |
+| **FA03 — Cancelamento após o sorteio** | No passo 2, se os times já foram sorteados, o sistema avisa que o jogador continua responsável pelo pagamento da sua parte (RN04). No passo 4, o pagamento já registrado para a inscrição é mantido. |
 | **FA04 — Jogador desiste** | No passo 3, o jogador não confirma e o caso de uso é encerrado sem alterações. |
 | **FLUXOS DE EXCEÇÃO** | |
 | **FE01 — Partida já iniciada ou encerrada** | No passo 1, se a partida já começou ou foi encerrada, o sistema não exibe a opção de cancelar presença. |

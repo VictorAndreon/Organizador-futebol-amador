@@ -12,7 +12,7 @@ O problema principal é que geralmente não há uma maneira centralizada de real
 
 O sistema é voltado para organizadores e jogadores de grupos de futebol amador.
 
-As principais funcionalidades são: criação das partidas, inscrição de jogadores, com lista de espera quando a partida lotar, sorteio automático para a divisão dos times, registro e controle de pagamentos, placares das partidas e perfis de jogadores.
+As principais funcionalidades são: criação das partidas, inscrição de jogadores, com fila de reservas quando as vagas de titulares estiverem completas, sorteio automático para a divisão dos times, registro e controle de pagamentos, placares das partidas e perfis de jogadores.
 
 ## Diagrama de classes
 
