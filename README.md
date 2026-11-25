@@ -6,7 +6,7 @@
 
 ## Descrição do sistema
 
-Sistema responsável por gerenciar e organizar partidas de futebol amador, como: futsal, society e campo. A ideia é auxiliar os organizadores dessas partidas a terem mais controle sobre elas: quem participa? quem pagou? quem está inadimplente? em que campo? quantos jogadores? etc.
+Sistema responsável por gerenciar e organizar partidas de futebol amador, como: futsal, society e campo. A ideia é auxiliar os organizadores dessas partidas a terem mais controle sobre elas: quem participa? quem pagou? quem está devendo? em que campo? quantos jogadores? etc.
 
 O problema principal é que geralmente não há uma maneira centralizada de realizar esse controle, muitas vezes sendo no “vamos ver”, “puxa a lista no whats”, etc. Assim, a responsabilidade fica com cada jogador, e o organizador não tem uma visão clara de quem confirmou, quem desistiu e quem está devendo.
 

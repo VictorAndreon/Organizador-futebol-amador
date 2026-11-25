@@ -83,10 +83,12 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 |---|---|---|---|
 | RN01 | Uma partida não aceita mais titulares do que o número de vagas definido. Com os titulares completos, novos inscritos entram como reservas; com as reservas também completas, novas inscrições não são aceitas. | Alta | RF06, RF07 |
 | RN02 | A fila de reservas segue a ordem de inscrição: quem se inscreveu primeiro é o primeiro a ser promovido a titular. | Alta | RF07, RF09 |
-| RN03 | O valor a ser pago por cada jogador é o valor total da quadra dividido pelo número de inscritos (titulares e reservas) no momento do sorteio dos times, arredondado para cima no centavo. Os reservas também pagam, pois revezam com os titulares durante a partida. | Alta | RF03, RF11, RF13 |
+| RN03 | O valor a ser pago por cada jogador é o valor total da quadra dividido pelo número de inscritos (titulares e reservas) no momento do primeiro sorteio dos times, arredondado para cima no centavo. Novos sorteios apenas redistribuem os times e não alteram o valor. Os reservas também pagam, pois revezam com os titulares durante a partida. | Alta | RF03, RF11, RF13 |
 | RN04 | O jogador que cancelar sua presença após o sorteio dos times continua responsável pelo pagamento da sua parte, pois o valor por jogador já foi calculado. | Média | RF08, RF11, RN03 |
 | RN05 | Após o sorteio dos times, as inscrições da partida são encerradas e não são aceitas novas confirmações. | Alta | RF06, RF11 |
 | RN06 | No sorteio, os jogadores com posição preferida de goleiro devem ser distribuídos um por time, enquanto houver goleiros disponíveis. | Média | RF01, RF11 |
+| RN07 | O sorteio divide os titulares em exatamente 2 times; com número ímpar de titulares, um dos times fica com um jogador a mais. Os reservas não pertencem a um time fixo e revezam com os titulares dos dois times. | Alta | RF11 |
+| RN08 | Ao cancelar uma partida, os pagamentos ainda não confirmados são cancelados e deixam de ser cobrados; a devolução de pagamentos já confirmados é tratada fora do sistema. | Média | RF05, RF13 |
 
 ## 5. Requisitos Suplementares
 
@@ -121,13 +123,13 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | UC02 - Autenticar-se | Jogador | RF02 |
 | UC03 - Criar partida | Organizador | RF03 |
 | UC04 - Gerar link de convite | — (incluído em UC03) | RF04 |
-| UC05 - Cancelar partida | Organizador | RF05 |
+| UC05 - Cancelar partida | Organizador | RF05, RN08 |
 | UC06 - Visualizar lista da partida | Jogador | RF10 |
 | UC07 - Confirmar presença | Jogador | RF06, RN01, RN05 |
 | UC08 - Entrar como reserva | — (estende UC07) | RF07, RN01 |
 | UC09 - Cancelar presença | Jogador | RF08, RN04 |
 | UC10 - Promover reserva | — (estende UC09) | RF09, RN02 |
-| UC11 - Sortear times | Organizador | RF11, RN05, RN06 |
+| UC11 - Sortear times | Organizador | RF11, RN05, RN06, RN07 |
 | UC12 - Calcular valor por jogador | — (incluído em UC11) | RN03 |
 | UC13 - Registrar placar | Organizador | RF15 |
 | UC14 - Informar pagamento | Jogador | RF12 |
@@ -216,15 +218,15 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **Ator principal** | Organizador |
 | **Atores secundários** | — |
 | **Resumo** | O organizador cancela uma partida que ainda não aconteceu. |
-| **Pré-condições** | O organizador está autenticado e é o responsável pela partida. A partida ainda não foi iniciada nem cancelada. |
-| **Pós-condições** | A partida está com situação *Cancelada* e não aceita mais inscrições, sorteio ou pagamentos. |
+| **Pré-condições** | O organizador está autenticado e é o responsável pela partida. A partida ainda não foi encerrada nem cancelada. |
+| **Pós-condições** | A partida está com situação *Cancelada* e não aceita mais inscrições, sorteio ou pagamentos; os pagamentos não confirmados estão com situação *Cancelado* (RN08). |
 | **FLUXO PRINCIPAL** | |
-| **Fluxo principal** | 1. O organizador acessa a partida e escolhe "Cancelar partida".<br>2. O sistema solicita a confirmação do cancelamento.<br>3. O organizador confirma.<br>4. O sistema altera a situação da partida para *Cancelada*.<br>5. O sistema exibe a partida como cancelada para todos os inscritos. |
+| **Fluxo principal** | 1. O organizador acessa a partida e escolhe "Cancelar partida".<br>2. O sistema solicita a confirmação do cancelamento.<br>3. O organizador confirma.<br>4. O sistema altera a situação da partida para *Cancelada*.<br>5. Se os times já foram sorteados, o sistema altera para *Cancelado* os pagamentos da partida que ainda não foram confirmados (RN08).<br>6. O sistema exibe a partida como cancelada para todos os inscritos. |
 | **FLUXOS ALTERNATIVOS** | |
 | **FA01 — Organizador desiste** | No passo 3, o organizador não confirma e o caso de uso é encerrado sem alterações. |
 | **FLUXOS DE EXCEÇÃO** | |
 | **FE01 — Usuário não é o organizador** | No passo 1, se o usuário não for o responsável pela partida, o sistema não exibe a opção de cancelamento (RNF06). |
-| **Requisitos relacionados** | RF05, RNF06 |
+| **Requisitos relacionados** | RF05, RN08, RNF06 |
 
 ### UC06 - Visualizar lista da partida
 
@@ -259,7 +261,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **FA02 — Confirmações simultâneas para a última vaga** | No passo 4, se dois jogadores confirmarem ao mesmo tempo, o sistema inscreve apenas o primeiro pedido processado; o outro segue o FA01 ou o FE01 (RNF04). |
 | **FLUXOS DE EXCEÇÃO** | |
 | **FE01 — Partida lotada** | No passo 4, se titulares e reservas estiverem completos, o sistema informa que a partida está lotada e não realiza a inscrição (RN01). |
-| **FE02 — Inscrições encerradas** | No passo 2, se os times já foram sorteados ou a partida foi cancelada, o sistema não exibe a opção de confirmar e informa o motivo (RN05). |
+| **FE02 — Inscrições encerradas** | No passo 2, se os times já foram sorteados, a partida foi cancelada ou a data e o horário da partida já passaram, o sistema não exibe a opção de confirmar e informa o motivo (RN05). |
 | **Requisitos relacionados** | RF06, RN01, RN05, RNF02, RNF03, RNF04 |
 
 ### UC08 - Entrar como reserva
@@ -327,14 +329,14 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **Pré-condições** | O organizador está autenticado e é o responsável pela partida. A partida está com situação *Inscrições abertas* ou *Lotada*. |
 | **Pós-condições** | Os times estão definidos, a partida está com situação *Times sorteados*, as inscrições estão encerradas e o valor por jogador está calculado. |
 | **FLUXO PRINCIPAL** | |
-| **Fluxo principal** | 1. O organizador acessa a partida e escolhe "Sortear times".<br>2. O sistema solicita a confirmação, informando que as inscrições serão encerradas.<br>3. O organizador confirma.<br>4. O sistema distribui os goleiros, um por time, enquanto houver goleiros disponíveis (RN06).<br>5. O sistema distribui aleatoriamente os demais titulares entre os times.<br>6. O sistema executa o UC12 - Calcular valor por jogador (**include**).<br>7. O sistema altera a situação da partida para *Times sorteados* (RN05).<br>8. O sistema exibe os times sorteados e o valor por jogador. |
+| **Fluxo principal** | 1. O organizador acessa a partida e escolhe "Sortear times".<br>2. O sistema solicita a confirmação, informando que as inscrições serão encerradas.<br>3. O organizador confirma.<br>4. O sistema distribui os goleiros, um por time, enquanto houver goleiros disponíveis (RN06).<br>5. O sistema distribui aleatoriamente os demais titulares entre os 2 times, de forma que um time tenha no máximo um jogador a mais que o outro (RN07).<br>6. O sistema executa o UC12 - Calcular valor por jogador (**include**).<br>7. O sistema altera a situação da partida para *Times sorteados* (RN05).<br>8. O sistema exibe os times sorteados e o valor por jogador. |
 | **FLUXOS ALTERNATIVOS** | |
 | **FA01 — Organizador desiste** | No passo 3, o organizador não confirma e o caso de uso é encerrado sem alterações. |
 | **FA02 — Nenhum goleiro inscrito** | No passo 4, o sistema pula a distribuição de goleiros e distribui todos os titulares aleatoriamente. |
-| **FA03 — Sortear novamente** | No passo 8, antes do início da partida, o organizador escolhe "Sortear de novo" e o fluxo retorna ao passo 4. |
+| **FA03 — Sortear novamente** | No passo 8, o organizador escolhe "Sortear de novo". O sistema repete os passos 4 e 5 e não executa o UC12: o valor por jogador e os pagamentos já registrados são mantidos (RN03). |
 | **FLUXOS DE EXCEÇÃO** | |
 | **FE01 — Titulares insuficientes** | No passo 1, se a partida tiver menos de 2 titulares, o sistema informa que não é possível sortear os times. |
-| **Requisitos relacionados** | RF11, RN05, RN06, RNF06 |
+| **Requisitos relacionados** | RF11, RN05, RN06, RN07, RNF06 |
 
 ### UC12 - Calcular valor por jogador
 
@@ -348,7 +350,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **FLUXO PRINCIPAL** | |
 | **Fluxo principal** | 1. O sistema conta os inscritos da partida (titulares e reservas).<br>2. O sistema divide o valor total da quadra pelo número de inscritos, arredondando para cima no centavo (RN03).<br>3. O sistema registra, para cada inscrito, um pagamento com situação *Pendente* e o valor calculado. |
 | **FLUXOS ALTERNATIVOS** | |
-| **FA01 — Sorteio refeito** | No passo 3, se o sorteio foi refeito (UC11, FA03) e o número de inscritos não mudou, o sistema mantém os pagamentos já registrados. |
+| — | Não há. O UC12 é executado apenas no primeiro sorteio; um novo sorteio (UC11, FA03) não recalcula o valor (RN03). |
 | **FLUXOS DE EXCEÇÃO** | |
 | — | Não há. |
 | **Requisitos relacionados** | RN03 |
@@ -365,7 +367,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **FLUXO PRINCIPAL** | |
 | **Fluxo principal** | 1. O organizador acessa a partida e escolhe "Registrar placar".<br>2. O sistema exibe os times sorteados.<br>3. O organizador informa a quantidade de gols de cada time.<br>4. O sistema valida os valores.<br>5. O sistema registra o placar e altera a situação da partida para *Encerrada*.<br>6. O sistema exibe o resultado final. |
 | **FLUXOS ALTERNATIVOS** | |
-| **FA01 — Corrigir placar** | No passo 1, se a partida já estiver *Encerrada*, o organizador escolhe "Editar placar" e o fluxo segue a partir do passo 2. |
+| — | Não há. |
 | **FLUXOS DE EXCEÇÃO** | |
 | **FE01 — Valor inválido** | No passo 4, se algum valor for negativo ou não numérico, o sistema informa o erro e retorna ao passo 3. |
 | **Requisitos relacionados** | RF15, RNF06 |
@@ -434,7 +436,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **Pré-condições** | O jogador está autenticado. |
 | **Pós-condições** | Nenhuma alteração no sistema. |
 | **FLUXO PRINCIPAL** | |
-| **Fluxo principal** | 1. O jogador acessa a opção "Meu perfil".<br>2. O sistema exibe nome, telefone, e-mail e posição preferida.<br>3. O sistema exibe o histórico de partidas *Encerradas* das quais o jogador participou, com data, local, time e placar.<br>4. O sistema exibe os pagamentos do jogador que ainda não foram confirmados. |
+| **Fluxo principal** | 1. O jogador acessa a opção "Meu perfil".<br>2. O sistema exibe nome, telefone, e-mail e posição preferida.<br>3. O sistema exibe o histórico de partidas *Encerradas* das quais o jogador participou, com data, local, time (ou "Reserva", para quem participou como reserva, já que reservas não pertencem a um time fixo — RN07) e placar.<br>4. O sistema exibe os pagamentos do jogador que ainda não foram confirmados. |
 | **FLUXOS ALTERNATIVOS** | |
 | **FA01 — Nenhuma partida disputada** | No passo 3, o sistema informa que o jogador ainda não participou de partidas. |
 | **FA02 — Nenhuma pendência** | No passo 4, o sistema informa que não há pagamentos pendentes. |
@@ -461,8 +463,8 @@ O modelo conceitual representa as entidades do domínio e seus relacionamentos, 
 | Jogador | Pessoa cadastrada no sistema. Um jogador que cria partidas atua como organizador delas. | RF01, RF02 |
 | Partida | Jogo marcado em uma data, horário e local, com limite de vagas e valor da quadra. | RF03, RF04, RF05 |
 | Inscricao | Participação de um jogador em uma partida, como titular ou reserva. Guarda a data e a hora da inscrição, que definem a ordem da fila de reservas. | RF06–RF09, RN01, RN02 |
-| Time | Equipe formada no sorteio, com o número de gols marcados na partida. | RF11, RF15, RN06 |
-| Pagamento | Parte do valor da quadra devida por um inscrito, com o comprovante e a situação (pendente, informado ou confirmado). | RF12–RF14, RN03, RN04 |
+| Time | Equipe formada no sorteio, com o número de gols marcados na partida. Cada partida sorteada tem exatamente 2 times. | RF11, RF15, RN06, RN07 |
+| Pagamento | Parte do valor da quadra devida por um inscrito, com o comprovante e a situação (pendente, informado, confirmado ou cancelado). | RF12–RF14, RN03, RN04, RN08 |
 
 **Associações**
 
@@ -471,8 +473,8 @@ O modelo conceitual representa as entidades do domínio e seus relacionamentos, 
 | Jogador *organiza* Partida | 1 — 0..* | Toda partida tem um organizador; um jogador pode organizar nenhuma ou várias partidas. |
 | Jogador *realiza* Inscricao | 1 — 0..* | Cada inscrição pertence a um jogador; um jogador pode se inscrever em várias partidas. |
 | Partida *possui* Inscricao | 1 — 0..* | Cada inscrição é de uma partida; a partida começa sem inscritos. |
-| Partida *é dividida em* Time | 1 — 0..* | Os times só existem após o sorteio, por isso a partida pode ter zero times. |
-| Inscricao *compõe* Time | 0..* — 0..1 | Um time é composto por inscrições de titulares; reservas e inscrições anteriores ao sorteio não pertencem a nenhum time. |
+| Partida *é dividida em* Time | 1 — 0..2 | Antes do sorteio a partida não tem times; após o sorteio, tem exatamente 2 (RN07). |
+| Inscricao *compõe* Time | 0..* — 0..1 | Um time é composto por inscrições de titulares; reservas (que revezam com os dois times) e inscrições anteriores ao sorteio não pertencem a nenhum time (RN07). |
 | Inscricao *gera* Pagamento | 1 — 0..1 | O pagamento é criado no sorteio (RN03), por isso a inscrição pode ainda não ter pagamento. |
 
 **Decisões de modelagem**
@@ -534,6 +536,7 @@ O modelo de domínio detalha o modelo conceitual com os tipos dos atributos, os 
 | Pagamento | `confirmar()` | UC15 |
 | Pagamento | `recusar()` | UC15 |
 | Pagamento | `registrarManualmente()` | UC15 |
+| Pagamento | `cancelar()` | UC05 |
 
 O cadastro (UC01) não aparece como método de Jogador porque é a própria criação do objeto (construtor).
 
@@ -559,27 +562,28 @@ O cadastro (UC01) não aparece como método de Jogador porque é a própria cria
 | Lotada | `LOTADA` | Titulares e reservas estão completos; novas inscrições não são aceitas (RN01). |
 | Times sorteados | `TIMES_SORTEADOS` | Os times foram definidos, as inscrições estão encerradas (RN05) e o valor por jogador está calculado (RN03). |
 | Encerrada | `ENCERRADA` | O placar foi registrado. Estado final. |
-| Cancelada | `CANCELADA` | O organizador cancelou a partida antes do jogo. Estado final. |
+| Cancelada | `CANCELADA` | O organizador cancelou a partida antes de encerrá-la; os pagamentos não confirmados foram cancelados (RN08). Estado final. |
 
 **Transições**
 
 | Origem → Destino | Evento [guarda] / ação | Caso de uso / Regra |
 |---|---|---|
 | Início → Inscrições abertas | / `gerarLinkConvite()` | UC03, UC04 |
-| Inscrições abertas (interna) | `inscrever(jogador)` [não é a última vaga] / cria Inscricao | UC07, UC08 |
-| Inscrições abertas → Lotada | `inscrever(jogador)` [é a última vaga] / cria Inscricao | UC08, RN01 |
+| Inscrições abertas (interna) | `inscrever(jogador)` [antes da dataHora e não é a última vaga] / cria Inscricao | UC07, UC08 |
+| Inscrições abertas → Lotada | `inscrever(jogador)` [antes da dataHora e é a última vaga] / cria Inscricao | UC08, RN01 |
 | Inscrições abertas (interna) | `cancelarInscricao(inscricao)` [antes da dataHora] / se era titular, `promoverReserva()` | UC09, UC10, RN02 |
 | Lotada → Inscrições abertas | `cancelarInscricao(inscricao)` [antes da dataHora] / se era titular, `promoverReserva()` | UC09, UC10, RN02 |
-| Inscrições abertas → Times sorteados | `sortearTimes()` [titulares >= 2] / `calcularValorPorJogador()` | UC11, UC12, RN03, RN05 |
-| Lotada → Times sorteados | `sortearTimes()` / `calcularValorPorJogador()` | UC11, UC12, RN03, RN05 |
-| Times sorteados (interna) | `sortearTimes()` [antes da dataHora] / `calcularValorPorJogador()` | UC11 (FA03), UC12 (FA01) |
+| Inscrições abertas → Times sorteados | `sortearTimes()` [titulares >= 2] / `calcularValorPorJogador()` | UC11, UC12, RN03, RN05, RN07 |
+| Lotada → Times sorteados | `sortearTimes()` / `calcularValorPorJogador()` | UC11, UC12, RN03, RN05, RN07 |
+| Times sorteados (interna) | `sortearTimes()` / redistribui os times, mantendo o valor | UC11 (FA03), RN03 |
 | Times sorteados (interna) | `cancelarInscricao(inscricao)` [antes da dataHora] / mantém o Pagamento; se era titular, `promoverReserva()` | UC09 (FA03), UC10 (FA01), RN04 |
 | Times sorteados → Encerrada | `encerrar()` [dataHora já passou] | UC13 |
-| Em preparação → Cancelada | `cancelar()` [antes da dataHora] | UC05 |
+| Em preparação → Cancelada | `cancelar()` / cancela os pagamentos não confirmados | UC05, RN08 |
 
 **Observações**
 
-- A partida "iniciada" citada nos casos de uso não é um estado separado: ela é determinada pela guarda de tempo (`dataHora`). Antes do horário, a partida ainda pode ser cancelada e os jogadores podem cancelar a presença; depois dele, apenas o placar pode ser registrado.
+- **Regra de tempo única.** A partida "iniciada" citada nos casos de uso não é um estado separado: ela é determinada pela guarda de tempo (`dataHora`). Até a data e o horário da partida, os jogadores podem se inscrever e cancelar a presença. Enquanto a partida não for encerrada, o organizador pode sortear os times e cancelar a partida. Somente depois da data e do horário a partida pode ser encerrada.
+- **Nenhum estado fica sem saída.** De qualquer estado de *Em preparação* a partida pode ser cancelada, a qualquer momento. Por isso, uma partida que chega ao horário sem titulares suficientes para o sorteio não fica presa: o organizador a cancela.
 - A partida só chega a **Lotada** a partir de **Inscrições abertas**, e sai dela quando qualquer inscrito cancela, porque sempre abre uma vaga (de titular ou, após a promoção de um reserva, de reserva).
 - Não existe transição de **Times sorteados** de volta para **Inscrições abertas**: após o sorteio, as inscrições ficam encerradas (RN05).
 

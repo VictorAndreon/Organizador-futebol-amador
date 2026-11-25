@@ -1,6 +1,7 @@
 @startuml maquina_estados_partida
 title Diagrama de Máquina de Estados — Partida
 
+skinparam dpi 150
 hide empty description
 skinparam ArrowColor #58595B
 skinparam state {
@@ -17,15 +18,15 @@ state "Em preparação" as Preparacao {
   state "Lotada" as Lotada
   state "Times sorteados" as Sorteados
 
-  Abertas : inscrever(jogador) [não é a última vaga] / cria Inscricao
+  Abertas : inscrever(jogador) [antes da dataHora e não é a última vaga]\n    / cria Inscricao
   Abertas : cancelarInscricao(inscricao) [antes da dataHora]\n    / se era titular, promoverReserva()
 
   Sorteados : entry / encerra as inscrições (RN05)
-  Sorteados : sortearTimes() [antes da dataHora] / calcularValorPorJogador()
+  Sorteados : sortearTimes() / redistribui os times, mantendo o valor (RN03)
   Sorteados : cancelarInscricao(inscricao) [antes da dataHora]\n    / mantém o Pagamento (RN04); se era titular, promoverReserva()
 
   [*] --> Abertas
-  Abertas --> Lotada : inscrever(jogador) [é a última vaga]\n/ cria Inscricao
+  Abertas --> Lotada : inscrever(jogador)\n[antes da dataHora e é a última vaga]\n/ cria Inscricao
   Lotada --> Abertas : cancelarInscricao(inscricao)\n[antes da dataHora]\n/ se era titular, promoverReserva()
   Abertas --> Sorteados : sortearTimes() [titulares >= 2]\n/ calcularValorPorJogador()
   Lotada --> Sorteados : sortearTimes()\n/ calcularValorPorJogador()
@@ -35,7 +36,7 @@ state "Encerrada" as Encerrada
 state "Cancelada" as Cancelada
 
 Sorteados --> Encerrada : encerrar()\n[dataHora já passou]
-Preparacao --> Cancelada : cancelar()\n[antes da dataHora]
+Preparacao --> Cancelada : cancelar()\n/ cancela os pagamentos não confirmados (RN08)
 
 Encerrada --> [*]
 Cancelada --> [*]

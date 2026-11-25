@@ -1,6 +1,8 @@
 @startuml casos_de_uso
 title Diagrama de Casos de Uso — Organizador de futebol amador
 
+skinparam dpi 150
+
 left to right direction
 skinparam actorStyle awesome
 skinparam packageStyle rectangle
@@ -65,10 +67,11 @@ Organizador -- UC13
 Organizador -- UC15
 Organizador -- UC16
 
-' Relacionamentos
+' Relacionamentos ("A <.. B" desenha a seta de B para A,
+' mantendo o caso base perto do ator)
 UC03 ..> UC04 : <<include>>
 UC11 ..> UC12 : <<include>>
-UC08 ..> UC07 : <<extend>>\n[titulares completos]
-UC10 ..> UC09 : <<extend>>\n[titular cancelou e há reservas]
+UC07 <.. UC08 : <<extend>>\n[titulares completos]
+UC09 <.. UC10 : <<extend>>\n[titular cancelou e há reservas]
 
 @enduml

@@ -1,6 +1,8 @@
 @startuml classes_dominio
 title Diagrama de Classes — Modelo de Domínio
 
+skinparam dpi 150
+
 hide circle
 skinparam ArrowColor #58595B
 skinparam classAttributeIconSize 0
@@ -68,6 +70,7 @@ class Pagamento {
   + confirmar() : void
   + recusar() : void
   + registrarManualmente() : void
+  + cancelar() : void
 }
 
 enum Posicao <<enumeration>> {
@@ -103,13 +106,14 @@ enum SituacaoPagamento <<enumeration>> {
   PENDENTE
   INFORMADO
   CONFIRMADO
+  CANCELADO
 }
 
 ' Associações (sem seta = navegável nos dois sentidos)
 Jogador "1" -- "0..*" Partida : organiza >
 Jogador "1" -- "0..*" Inscricao : realiza >
 Partida "1" *-- "0..*" Inscricao : possui >
-Partida "1" *--> "0..*" Time : é dividida em >
+Partida "1" *--> "0..2" Time : é dividida em >
 Time "0..1" -- "0..*" Inscricao : compõe <
 Inscricao "1" *--> "0..1" Pagamento : gera >
 
