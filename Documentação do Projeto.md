@@ -295,6 +295,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **FA02 — Era titular e não há reservas** | No passo 5, a vaga de titular fica livre e, se a partida estava *Lotada*, volta para *Inscrições abertas*. |
 | **FA03 — Cancelamento após o sorteio** | No passo 2, se os times já foram sorteados, o sistema avisa que o jogador continua responsável pelo pagamento da sua parte (RN04). No passo 4, o pagamento já registrado para a inscrição é mantido. |
 | **FA04 — Jogador desiste** | No passo 3, o jogador não confirma e o caso de uso é encerrado sem alterações. |
+| **FA05 — Era reserva** | No passo 5, o jogador sai da fila de reservas, os reservas seguintes avançam uma posição e, se a partida estava *Lotada*, ela volta para *Inscrições abertas*. |
 | **FLUXOS DE EXCEÇÃO** | |
 | **FE01 — Partida já iniciada ou encerrada** | No passo 1, se a partida já começou ou foi encerrada, o sistema não exibe a opção de cancelar presença. |
 | **Requisitos relacionados** | RF08, RN04 |
@@ -536,7 +537,51 @@ O modelo de domínio detalha o modelo conceitual com os tipos dos atributos, os 
 
 O cadastro (UC01) não aparece como método de Jogador porque é a própria criação do objeto (construtor).
 
-## 10. Segundo Diagrama UML
+## 10. Segundo Diagrama UML — Máquina de Estados da Partida
+
+**Por que este diagrama:** a Partida é a entidade central do sistema e a que tem o ciclo de vida mais rico. O que pode ser feito com ela (inscrever, sortear, cancelar, encerrar) depende da situação em que ela está, e essas restrições aparecem em várias regras de negócio e casos de uso. O diagrama de máquina de estados deixa essas regras explícitas em um único lugar.
+
+![Diagrama de Máquina de Estados — Partida](diagramas/maquina_estados_partida.png)
+
+> Fonte do diagrama (PlantUML): [maquina_estados_partida.puml](diagramas/maquina_estados_partida.puml)
+
+**Notação**
+
+- Transições no formato `evento [guarda] / ação`. Os eventos e as ações são métodos da classe Partida definidos no modelo de domínio (seção 9).
+- **Transições internas** (escritas dentro do estado) tratam o evento sem mudar de estado. A atividade `entry` é executada sempre que o estado é alcançado.
+- **Em preparação** é um **estado composto** que agrupa os estados anteriores ao jogo. A transição `cancelar()` sai da borda do estado composto e, por isso, vale para qualquer um dos seus subestados.
+
+**Estados**
+
+| Estado | Valor em `SituacaoPartida` | Descrição |
+|---|---|---|
+| Inscrições abertas | `INSCRICOES_ABERTAS` | A partida aceita confirmações de presença, como titular ou reserva. |
+| Lotada | `LOTADA` | Titulares e reservas estão completos; novas inscrições não são aceitas (RN01). |
+| Times sorteados | `TIMES_SORTEADOS` | Os times foram definidos, as inscrições estão encerradas (RN05) e o valor por jogador está calculado (RN03). |
+| Encerrada | `ENCERRADA` | O placar foi registrado. Estado final. |
+| Cancelada | `CANCELADA` | O organizador cancelou a partida antes do jogo. Estado final. |
+
+**Transições**
+
+| Origem → Destino | Evento [guarda] / ação | Caso de uso / Regra |
+|---|---|---|
+| Início → Inscrições abertas | / `gerarLinkConvite()` | UC03, UC04 |
+| Inscrições abertas (interna) | `inscrever(jogador)` [não é a última vaga] / cria Inscricao | UC07, UC08 |
+| Inscrições abertas → Lotada | `inscrever(jogador)` [é a última vaga] / cria Inscricao | UC08, RN01 |
+| Inscrições abertas (interna) | `cancelarInscricao(inscricao)` [antes da dataHora] / se era titular, `promoverReserva()` | UC09, UC10, RN02 |
+| Lotada → Inscrições abertas | `cancelarInscricao(inscricao)` [antes da dataHora] / se era titular, `promoverReserva()` | UC09, UC10, RN02 |
+| Inscrições abertas → Times sorteados | `sortearTimes()` [titulares >= 2] / `calcularValorPorJogador()` | UC11, UC12, RN03, RN05 |
+| Lotada → Times sorteados | `sortearTimes()` / `calcularValorPorJogador()` | UC11, UC12, RN03, RN05 |
+| Times sorteados (interna) | `sortearTimes()` [antes da dataHora] / `calcularValorPorJogador()` | UC11 (FA03), UC12 (FA01) |
+| Times sorteados (interna) | `cancelarInscricao(inscricao)` [antes da dataHora] / mantém o Pagamento; se era titular, `promoverReserva()` | UC09 (FA03), UC10 (FA01), RN04 |
+| Times sorteados → Encerrada | `encerrar()` [dataHora já passou] | UC13 |
+| Em preparação → Cancelada | `cancelar()` [antes da dataHora] | UC05 |
+
+**Observações**
+
+- A partida "iniciada" citada nos casos de uso não é um estado separado: ela é determinada pela guarda de tempo (`dataHora`). Antes do horário, a partida ainda pode ser cancelada e os jogadores podem cancelar a presença; depois dele, apenas o placar pode ser registrado.
+- A partida só chega a **Lotada** a partir de **Inscrições abertas**, e sai dela quando qualquer inscrito cancela, porque sempre abre uma vaga (de titular ou, após a promoção de um reserva, de reserva).
+- Não existe transição de **Times sorteados** de volta para **Inscrições abertas**: após o sorteio, as inscrições ficam encerradas (RN05).
 
 ---
 

@@ -1,0 +1,43 @@
+@startuml maquina_estados_partida
+title Diagrama de Máquina de Estados — Partida
+
+hide empty description
+skinparam ArrowColor #58595B
+skinparam state {
+  BackgroundColor #EAF4EE
+  BorderColor #6FAE8C
+  StartColor #58595B
+  EndColor #58595B
+}
+
+[*] --> Preparacao : / gerarLinkConvite()
+
+state "Em preparação" as Preparacao {
+  state "Inscrições abertas" as Abertas
+  state "Lotada" as Lotada
+  state "Times sorteados" as Sorteados
+
+  Abertas : inscrever(jogador) [não é a última vaga] / cria Inscricao
+  Abertas : cancelarInscricao(inscricao) [antes da dataHora]\n    / se era titular, promoverReserva()
+
+  Sorteados : entry / encerra as inscrições (RN05)
+  Sorteados : sortearTimes() [antes da dataHora] / calcularValorPorJogador()
+  Sorteados : cancelarInscricao(inscricao) [antes da dataHora]\n    / mantém o Pagamento (RN04); se era titular, promoverReserva()
+
+  [*] --> Abertas
+  Abertas --> Lotada : inscrever(jogador) [é a última vaga]\n/ cria Inscricao
+  Lotada --> Abertas : cancelarInscricao(inscricao)\n[antes da dataHora]\n/ se era titular, promoverReserva()
+  Abertas --> Sorteados : sortearTimes() [titulares >= 2]\n/ calcularValorPorJogador()
+  Lotada --> Sorteados : sortearTimes()\n/ calcularValorPorJogador()
+}
+
+state "Encerrada" as Encerrada
+state "Cancelada" as Cancelada
+
+Sorteados --> Encerrada : encerrar()\n[dataHora já passou]
+Preparacao --> Cancelada : cancelar()\n[antes da dataHora]
+
+Encerrada --> [*]
+Cancelada --> [*]
+
+@enduml
