@@ -4,6 +4,7 @@ title Diagrama de Classes — Modelo de Domínio
 skinparam dpi 150
 
 hide circle
+hide empty members
 skinparam ArrowColor #58595B
 skinparam classAttributeIconSize 0
 skinparam class {
@@ -19,11 +20,12 @@ class Jogador {
   - email : String
   - senhaHash : String
   - posicaoPreferida : Posicao
-  + autenticar(email : String, senha : String) : boolean
+  - dataAceiteTermos : DateTime
+  + autenticar(senha : String) : boolean
   + criarPartida(dataHora : DateTime, local : String, modalidade : Modalidade, vagasTitulares : int, vagasReservas : int, valorQuadra : Decimal) : Partida
   + consultarHistorico() : List<Partida>
   + consultarProximasPartidas() : List<Partida>
-  + consultarPendencias() : List<Pagamento>
+  + consultarPagamentosPendentes() : List<Inscricao>
 }
 
 class Partida {
@@ -33,6 +35,7 @@ class Partida {
   - vagasTitulares : int
   - vagasReservas : int
   - valorQuadra : Decimal
+  - valorPorJogador : Decimal
   - linkConvite : String
   - situacao : SituacaoPartida
   + gerarLinkConvite() : String
@@ -44,7 +47,7 @@ class Partida {
   + calcularValorPorJogador() : Decimal
   + encerrar() : void
   + cancelar() : void
-  + listarPendencias() : List<Pagamento>
+  + listarPendencias() : List<Inscricao>
 }
 
 class Inscricao {

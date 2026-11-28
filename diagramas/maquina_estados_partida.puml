@@ -2,6 +2,7 @@
 title Diagrama de Máquina de Estados — Partida
 
 skinparam dpi 150
+skinparam shadowing false
 hide empty description
 skinparam ArrowColor #58595B
 skinparam state {
@@ -10,6 +11,12 @@ skinparam state {
   StartColor #58595B
   EndColor #58595B
 }
+skinparam state<<pad>> {
+  BackgroundColor transparent
+  BorderColor transparent
+  FontColor transparent
+}
+hide stereotype
 
 [*] --> Preparacao : / gerarLinkConvite()
 
@@ -17,6 +24,7 @@ state "Em preparação" as Preparacao {
   state "Inscrições abertas" as Abertas
   state "Lotada" as Lotada
   state "Times sorteados" as Sorteados
+  state "espaco" as Pad <<pad>>
 
   Abertas : inscrever(jogador) [antes da dataHora e não é a última vaga]\n    / cria Inscricao
   Abertas : cancelarInscricao(inscricao) [antes da dataHora]\n    / se era titular, promoverReserva()
@@ -26,9 +34,10 @@ state "Em preparação" as Preparacao {
   Sorteados : cancelarInscricao(inscricao) [antes da dataHora]\n    / mantém o Pagamento (RN04); se era titular, promoverReserva()
 
   [*] --> Abertas
-  Abertas --> Lotada : inscrever(jogador)\n[antes da dataHora e é a última vaga]\n/ cria Inscricao
-  Lotada --> Abertas : cancelarInscricao(inscricao)\n[antes da dataHora]\n/ se era titular, promoverReserva()
-  Abertas --> Sorteados : sortearTimes() [titulares >= 2]\n/ calcularValorPorJogador()
+  Abertas --> Sorteados : sortearTimes()\n[titulares >= 2]\n/ calcularValorPorJogador()
+  Abertas -right-> Lotada : inscrever(jogador)\n[antes da dataHora e é a última vaga]\n/ cria Inscricao
+  Lotada -left-> Abertas : cancelarInscricao(inscricao)\n[antes da dataHora]\n/ se era titular, promoverReserva()
+  Lotada -[hidden]right-> Pad
   Lotada --> Sorteados : sortearTimes()\n/ calcularValorPorJogador()
 }
 

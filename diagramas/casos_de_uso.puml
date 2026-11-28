@@ -54,6 +54,7 @@ rectangle "Organizador de futebol amador" {
 ' Jogador
 Jogador -- UC01
 Jogador -- UC02
+Jogador -- UC03
 Jogador -- UC06
 Jogador -- UC07
 Jogador -- UC09
@@ -61,8 +62,7 @@ Jogador -- UC14
 Jogador -- UC17
 Jogador -- UC18
 
-' Organizador (também herda todos os casos do Jogador)
-Organizador -- UC03
+' Organizador = quem criou a partida (também herda todos os casos do Jogador)
 Organizador -- UC05
 Organizador -- UC11
 Organizador -- UC13
@@ -73,7 +73,7 @@ Organizador -- UC16
 ' mantendo o caso base perto do ator)
 UC03 ..> UC04 : <<include>>
 UC11 ..> UC12 : <<include>>
-UC07 <.. UC08 : <<extend>>\n[titulares completos]
+UC07 <.. UC08 : <<extend>>\n[titulares completos e há vaga de reserva]
 UC09 <.. UC10 : <<extend>>\n[titular cancelou e há reservas]
 
 @enduml

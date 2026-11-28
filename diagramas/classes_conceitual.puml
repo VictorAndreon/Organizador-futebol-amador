@@ -19,6 +19,7 @@ class Jogador {
   email
   senha
   posicaoPreferida
+  dataAceiteTermos
 }
 
 class Partida {
@@ -28,6 +29,7 @@ class Partida {
   vagasTitulares
   vagasReservas
   valorQuadra
+  valorPorJogador
   linkConvite
   situacao
 }
