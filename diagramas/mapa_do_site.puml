@@ -1,0 +1,81 @@
+@startuml mapa_do_site
+title Mapa do Site — Organizador de futebol amador
+
+skinparam dpi 150
+
+skinparam ArrowColor #58595B
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BackgroundColor #EAF4EE
+  BorderColor #6FAE8C
+  RoundCorner 12
+}
+skinparam rectangle<<organizador>> {
+  BackgroundColor #FFF4E0
+  BorderColor #D9A441
+}
+skinparam rectangle<<externo>> {
+  BackgroundColor #FFFFFF
+  BorderColor #58595B
+  BorderStyle dashed
+}
+hide stereotype
+
+rectangle "Link de convite\n(compartilhado no WhatsApp)" as Link <<externo>>
+
+rectangle "T01 · Login\nUC02" as T01
+rectangle "T02 · Cadastro\nUC01" as T02
+rectangle "T03 · Início (minhas partidas)\nUC18" as T03
+
+rectangle "T04 · Nova partida\nUC03" as T04 <<organizador>>
+rectangle "T05 · Partida criada\nUC04" as T05 <<organizador>>
+
+rectangle "T06 · Detalhe da partida\nUC06 · UC07 · UC08 · UC09 · UC10\nUC05 (organizador)" as T06
+rectangle "T07 · Times sorteados\nUC11 · UC12" as T07
+rectangle "T08 · Registrar placar\nUC13" as T08 <<organizador>>
+rectangle "T09 · Informar pagamento\nUC14" as T09
+rectangle "T10 · Pagamentos da partida\nUC15" as T10 <<organizador>>
+
+rectangle "T11 · Pendências\nUC16" as T11 <<organizador>>
+rectangle "T12 · Perfil\nUC17" as T12
+
+' Autenticação
+T01 <--> T02 : criar conta /\nvoltar ao login
+T01 --> T03 : autenticado
+Link --> T01 : não autenticado
+Link --> T06 : autenticado
+T01 ..> T06 : autenticado\n(veio pelo link)
+
+' Início
+T03 --> T04 : nova partida
+T03 --> T06 : abrir partida
+T03 --> T11 : pendências
+T03 --> T12 : perfil
+
+' Criação
+T04 --> T05 : salvar
+T05 --> T06 : ver partida
+
+' Partida
+T06 --> T07 : sortear / ver times
+T06 --> T08 : registrar placar
+T06 --> T09 : informar pagamento
+T06 --> T10 : pagamentos
+
+' Pendências e perfil
+T11 --> T10 : selecionar partida
+T12 --> T09 : informar pagamento
+
+legend right
+  <b>Verde:</b> tela de qualquer usuário autenticado
+  <b>Laranja:</b> tela exclusiva do organizador da partida (RNF06)
+  <b>Tracejado:</b> ponto de entrada externo
+  Em T06 e T07, as ações de organizador (cancelar partida,
+  sortear, sortear de novo) só aparecem para ele.
+  Confirmações são diálogos dentro da própria tela.
+  Menu fixo: Início · Pendências · Perfil
+  (o item Pendências só aparece para quem organiza
+  ao menos uma partida)
+endlegend
+
+@enduml

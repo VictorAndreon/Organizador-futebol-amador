@@ -48,6 +48,7 @@ rectangle "Organizador de futebol amador" {
 
   ' Perfil
   usecase "UC17 - Visualizar perfil" as UC17
+  usecase "UC18 - Visualizar minhas partidas" as UC18
 }
 
 ' Jogador
@@ -58,6 +59,7 @@ Jogador -- UC07
 Jogador -- UC09
 Jogador -- UC14
 Jogador -- UC17
+Jogador -- UC18
 
 ' Organizador (também herda todos os casos do Jogador)
 Organizador -- UC03

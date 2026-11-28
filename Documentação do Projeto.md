@@ -40,7 +40,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 
 **Contexto de uso:** o organizador cria a partida no sistema e compartilha o link de convite no grupo de WhatsApp; os jogadores acessam pelo celular para confirmar presença, acompanhar a lista e informar seus pagamentos.
 
-**Funcionalidades contempladas:** cadastro e autenticação de usuários; criação e cancelamento de partidas com link de convite; confirmação e cancelamento de presença, com fila de reservas e promoção automática; sorteio aleatório dos times; cálculo do valor por jogador; registro e controle de pagamentos; registro do placar; perfil do jogador com histórico e pendências.
+**Funcionalidades contempladas:** cadastro e autenticação de usuários; criação e cancelamento de partidas com link de convite; confirmação e cancelamento de presença, com fila de reservas e promoção automática; sorteio aleatório dos times; cálculo do valor por jogador; registro e controle de pagamentos; registro do placar; perfil do jogador com histórico e pendências; listagem das próximas partidas do usuário.
 
 **Fora do escopo:** pagamento online (Pix, cartão ou integração bancária); reserva de quadra junto ao dono do espaço; organização de campeonatos; notificações (e-mail, push ou WhatsApp); grupos fixos e mensalistas. Esses itens são candidatos a melhorias futuras.
 
@@ -64,6 +64,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | RF14 | O sistema deve exibir ao organizador a lista de jogadores com pagamento pendente em cada partida. | Alta | RF13 |
 | RF15 | O sistema deve permitir que o organizador registre o placar final da partida. | Média | RF11 |
 | RF16 | O sistema deve exibir o perfil do jogador com seu histórico de partidas disputadas e pendências financeiras. | Baixa | RF15 |
+| RF17 | O sistema deve exibir ao usuário as próximas partidas em que está inscrito ou que organiza, com data, horário, local, situação e vagas restantes. | Alta | RF03, RF06 |
 
 ## 3. Requisitos Não Funcionais
 
@@ -136,6 +137,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | UC15 - Confirmar pagamento | Organizador | RF13 |
 | UC16 - Consultar pendências | Organizador | RF14 |
 | UC17 - Visualizar perfil | Jogador | RF16 |
+| UC18 - Visualizar minhas partidas | Jogador | RF17 |
 
 ## 7. Documentação dos Casos de Uso
 
@@ -169,7 +171,7 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | **Pré-condições** | O usuário possui cadastro no sistema. |
 | **Pós-condições** | O usuário está autenticado e tem acesso às funcionalidades do seu perfil. |
 | **FLUXO PRINCIPAL** | |
-| **Fluxo principal** | 1. O usuário acessa o sistema, diretamente ou pelo link de convite de uma partida.<br>2. O sistema solicita e-mail e senha.<br>3. O usuário informa e-mail e senha.<br>4. O sistema valida as credenciais.<br>5. O sistema autentica o usuário e o direciona para a página inicial ou para a partida do link de convite. |
+| **Fluxo principal** | 1. O usuário acessa o sistema, diretamente ou pelo link de convite de uma partida.<br>2. O sistema solicita e-mail e senha.<br>3. O usuário informa e-mail e senha.<br>4. O sistema valida as credenciais.<br>5. O sistema autentica o usuário e o direciona para a lista de suas próximas partidas (UC18) ou, se veio pelo link de convite, para a partida do link. |
 | **FLUXOS ALTERNATIVOS** | |
 | **FA01 — Usuário sem cadastro** | No passo 2, o usuário escolhe "Criar conta" e é executado o UC01 - Cadastrar-se. |
 | **FLUXOS DE EXCEÇÃO** | |
@@ -444,6 +446,24 @@ O propósito é auxiliar e facilitar a manutenção e organização dessas parti
 | — | Não há. |
 | **Requisitos relacionados** | RF16 |
 
+### UC18 - Visualizar minhas partidas
+
+| **Caso de uso** | UC18 - Visualizar minhas partidas |
+|---|---|
+| **Ator principal** | Jogador (e Organizador, por herança) |
+| **Atores secundários** | — |
+| **Resumo** | O usuário consulta as próximas partidas em que está inscrito ou que organiza e acessa qualquer uma delas sem depender do link de convite. |
+| **Pré-condições** | O usuário está autenticado. |
+| **Pós-condições** | Nenhuma alteração no sistema. |
+| **FLUXO PRINCIPAL** | |
+| **Fluxo principal** | 1. O usuário acessa a opção "Início".<br>2. O sistema lista as partidas ainda não encerradas nem canceladas em que o usuário está inscrito ou que organiza, ordenadas pela data e horário.<br>3. Para cada partida, o sistema exibe data, horário, local, modalidade, situação e vagas restantes, identificando as partidas que o usuário organiza.<br>4. O usuário seleciona uma partida.<br>5. O sistema exibe a partida (UC06 - Visualizar lista da partida). |
+| **FLUXOS ALTERNATIVOS** | |
+| **FA01 — Nenhuma partida** | No passo 2, se o usuário não tiver partidas futuras, o sistema informa isso e exibe a opção "Nova partida" (UC03). |
+| **FA02 — Criar partida** | No passo 4, o usuário escolhe "Nova partida" e é executado o UC03 - Criar partida. |
+| **FLUXOS DE EXCEÇÃO** | |
+| — | Não há. |
+| **Requisitos relacionados** | RF17 |
+
 ---
 
 # Parte III — Modelagem
@@ -503,8 +523,8 @@ O modelo de domínio detalha o modelo conceitual com os tipos dos atributos, os 
 
 | Associação | Navegabilidade | Justificativa |
 |---|---|---|
-| Jogador *organiza* Partida | Bidirecional | A partida precisa saber quem é seu organizador para validar as permissões (RNF06); o organizador precisa listar suas partidas para consultar pendências (UC16). |
-| Jogador *realiza* Inscricao | Bidirecional | A lista da partida exibe o nome de cada inscrito (UC06); o perfil do jogador lista suas inscrições para montar o histórico (UC17). |
+| Jogador *organiza* Partida | Bidirecional | A partida precisa saber quem é seu organizador para validar as permissões (RNF06); o organizador precisa listar suas partidas para consultar pendências (UC16) e ver as próximas partidas (UC18). |
+| Jogador *realiza* Inscricao | Bidirecional | A lista da partida exibe o nome de cada inscrito (UC06); o jogador lista suas inscrições para montar o histórico (UC17) e as próximas partidas (UC18). |
 | Partida *possui* Inscricao | Bidirecional (composição) | A partida controla vagas e fila de reservas a partir das inscrições (UC07–UC10); o histórico do jogador precisa chegar à partida a partir da inscrição (UC17). |
 | Partida *é dividida em* Time | Partida → Time (composição) | Os times são acessados sempre a partir da partida (UC06, UC11, UC13); o time não precisa conhecer a partida. |
 | Time *compõe* Inscricao | Bidirecional | O time lista seus jogadores (UC06); a inscrição precisa saber seu time para o reserva promovido assumir a vaga no mesmo time (UC10, FA01) e para o histórico (UC17). |
@@ -517,6 +537,7 @@ O modelo de domínio detalha o modelo conceitual com os tipos dos atributos, os 
 | Jogador | `autenticar()` | UC02 |
 | Jogador | `criarPartida()` | UC03 |
 | Jogador | `consultarHistorico()` | UC17 |
+| Jogador | `consultarProximasPartidas()` | UC18 |
 | Jogador | `consultarPendencias()` | UC14, UC17 |
 | Partida | `gerarLinkConvite()` | UC04 |
 | Partida | `inscrever()` | UC07, UC08 |
@@ -593,7 +614,67 @@ O cadastro (UC01) não aparece como método de Jogador porque é a própria cria
 
 ## 11. Mapa do Site
 
+![Mapa do Site](diagramas/mapa_do_site.png)
+
+> Fonte do diagrama (PlantUML): [mapa_do_site.puml](diagramas/mapa_do_site.puml)
+
+O mapa do site apresenta as 12 telas do sistema e a navegação entre elas. Cada tela indica os casos de uso que atende, de forma que todos os casos de uso do diagrama possuem ao menos uma tela correspondente. Os casos de uso sem ator direto aparecem como estados de outras telas: UC04 na tela T05, UC08 e UC10 na tela T06 e UC12 na tela T07.
+
+**Pontos de entrada**
+
+- **Link de convite** (compartilhado no WhatsApp): é a entrada principal dos jogadores (RNF01). Usuários autenticados vão direto para o detalhe da partida (T06); os demais passam pelo login (T01) e, em seguida, são levados à partida do link (UC02).
+- **Acesso direto ao sistema:** após o login, o usuário chega ao Início (T03), com suas próximas partidas (UC18).
+
+**Navegação e permissões**
+
+- As telas em laranja são exclusivas do organizador da partida (RNF06): Nova partida, Partida criada, Registrar placar, Pagamentos da partida e Pendências. Nas telas T06 e T07, os botões de organizador (cancelar partida, sortear e sortear de novo) só aparecem para ele.
+- O menu fixo das telas autenticadas tem Início, Pendências e Perfil; o item Pendências só aparece para quem organiza ao menos uma partida.
+- Confirmações de ações (cancelar partida, cancelar presença e sortear times) são diálogos dentro da própria tela, e não telas separadas.
+
 ## 12. Telas
+
+O protótipo foi feito para celular (RNF01), já que o acesso principal acontece pelo link compartilhado no WhatsApp. As telas seguem o mapa do site (seção 11). A tela T06 tem variações que mostram a mesma tela em situações diferentes da partida e na visão de cada tipo de usuário. Os diálogos de confirmação aparecem junto da tela em que são abertos.
+
+Dados de exemplo usados em todas as telas: partida de society na quinta-feira, 10/12, às 20h, na Arena Society Centro, com 14 titulares, 2 reservas e quadra de R$ 280,00, o que dá R$ 280,00 ÷ 16 = R$ 17,50 por jogador (RN03).
+
+### Acesso
+
+| Tela | Descrição | Casos de uso | Acessada por |
+|---|---|---|---|
+| <img src="prototipo/T01_login.png" width="220"> | **T01 · Login.** E-mail e senha, além do link "Criar conta". Quem chega pelo link de convite sem estar autenticado passa por aqui e depois é levado à partida. | UC02 | Link de convite; T02 |
+| <img src="prototipo/T02_cadastro.png" width="220"> | **T02 · Cadastro.** Nome, telefone, e-mail, senha, posição preferida (linha ou goleiro) e aceite do uso dos dados conforme a LGPD (RS01). | UC01 | T01 |
+| <img src="prototipo/T03_inicio.png" width="220"> | **T03 · Início (Minhas partidas).** Próximas partidas em que o usuário está inscrito ou que organiza, com data, local, modalidade, situação e vagas restantes. As partidas que ele organiza são identificadas. Botão "Nova partida". | UC18 | T01; menu |
+
+### Criação da partida (organizador)
+
+| Tela | Descrição | Casos de uso | Acessada por |
+|---|---|---|---|
+| <img src="prototipo/T04_nova_partida.png" width="220"> | **T04 · Nova partida.** Data, horário, local, modalidade, vagas de titulares e de reservas e valor total da quadra, com a explicação de como o valor por jogador é calculado. | UC03 | T03 |
+| <img src="prototipo/T05_partida_criada.png" width="220"> | **T05 · Partida criada.** Resumo da partida, link de convite gerado e botão "Compartilhar no WhatsApp". | UC04 | T04 |
+
+### Detalhe da partida (T06) e suas variações
+
+| Tela | Descrição | Casos de uso | Acessada por |
+|---|---|---|---|
+| <img src="prototipo/T06a_detalhe_nao_inscrito.png" width="220"> | **T06a · Jogador ainda não inscrito.** Dados da partida, vagas restantes, titulares e fila de reservas. O botão "Confirmar presença" fica fixo no rodapé e inscreve o jogador com um toque (RNF02). | UC06, UC07 | Link de convite; T03 |
+| <img src="prototipo/T06b_detalhe_reserva.png" width="220"> <img src="prototipo/T06b_modal_cancelar_presenca.png" width="220"> | **T06b · Jogador inscrito como reserva, partida Lotada.** Mostra a posição na fila ("Você é o 2º reserva") e explica que o primeiro reserva vira titular automaticamente quando um titular cancela. Ao lado, o diálogo de "Cancelar presença". | UC08, UC09, UC10 | T03; T06a |
+| <img src="prototipo/T06c_detalhe_lotada.png" width="220"> | **T06c · Partida lotada.** Para quem não está inscrito, o sistema informa que titulares e reservas estão completos e não oferece a opção de confirmar presença (RN01). | UC06, UC07 (FE01) | Link de convite |
+| <img src="prototipo/T06d_detalhe_organizador.png" width="220"> <img src="prototipo/T06d_modal_sortear_times.png" width="220"> <img src="prototipo/T06d_modal_cancelar_partida.png" width="220"> | **T06d · Visão do organizador antes do sorteio.** Bloco "Ações do organizador" com "Sortear times" e "Cancelar partida" (RNF06). O diálogo de sorteio mostra o cálculo do valor por jogador e avisa que as inscrições serão encerradas (RN05). O diálogo de cancelamento avisa que os pagamentos não confirmados serão cancelados (RN08). | UC05, UC11, UC12 | T03 |
+| <img src="prototipo/T06e_detalhe_organizador_times_sorteados.png" width="220"> | **T06e · Visão do organizador após o sorteio.** Inscrições encerradas, com "Ver times sorteados", "Pagamentos da partida", "Registrar placar" (desabilitado até o horário da partida) e "Cancelar partida". | UC05, UC06, UC13, UC15 | T03 |
+| <img src="prototipo/T06f_detalhe_reserva_times_sorteados.png" width="220"> | **T06f · Visão do jogador após o sorteio.** Card com o valor da sua parte e o botão "Informar pagamento", além de "Ver times sorteados". "Cancelar presença" avisa que, após o sorteio, quem cancela continua devendo sua parte (RN04). | UC06, UC09, UC14 | T03 |
+
+### Jogo e pagamentos
+
+| Tela | Descrição | Casos de uso | Acessada por |
+|---|---|---|---|
+| <img src="prototipo/T07_times_sorteados.png" width="220"> <img src="prototipo/T07_modal_sortear_de_novo.png" width="220"> | **T07 · Times sorteados.** Time A e Time B com 7 jogadores cada e um goleiro em cada time (RN06, RN07), reservas sem time fixo e valor por jogador. O organizador pode sortear de novo; o diálogo informa que o valor não muda (RN03). | UC11, UC12 | T06d, T06e, T06f |
+| <img src="prototipo/T08_registrar_placar.png" width="220"> | **T08 · Registrar placar (organizador).** Gols do Time A e do Time B. Ao salvar, a partida é encerrada. | UC13 | T06e |
+| <img src="prototipo/T09_informar_pagamento.png" width="220"> | **T09 · Informar pagamento.** Valor a pagar, situação do pagamento e envio do comprovante (JPG, PNG ou PDF, até 5 MB — RNF07). Depois do envio, o pagamento fica *Informado* até a confirmação do organizador. | UC14 | T06f; T12 |
+| <img src="prototipo/T10_pagamentos_da_partida.png" width="220"> | **T10 · Pagamentos da partida (organizador).** Total a receber e confirmado, e a lista de inscritos agrupada por situação. Pagamentos *Informados* podem ser confirmados ou recusados depois de ver o comprovante; os *Pendentes* podem ser registrados manualmente. | UC15 | T06e; T11 |
+| <img src="prototipo/T11_pendencias.png" width="220"> | **T11 · Pendências (organizador).** Total a receber de todas as partidas que o usuário organiza e, para cada partida, quem ainda deve e quanto. | UC16 | Menu (só para quem organiza partidas) |
+| <img src="prototipo/T12_perfil.png" width="220"> | **T12 · Perfil.** Dados do jogador, pagamentos pendentes com atalho para informar o pagamento e histórico de partidas encerradas, com local, time (ou "reserva") e placar. | UC17 | Menu |
+
+**Cobertura dos casos de uso:** todos os 18 casos de uso têm ao menos uma tela. Os casos de uso sem ator direto aparecem como parte de outras telas: UC04 (link de convite) na T05, UC08 (entrar como reserva) e UC10 (promover reserva) na T06b, e UC12 (calcular valor) no diálogo de sorteio da T06d e na T07.
 
 ---
 

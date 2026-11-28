@@ -22,6 +22,7 @@ class Jogador {
   + autenticar(email : String, senha : String) : boolean
   + criarPartida(dataHora : DateTime, local : String, modalidade : Modalidade, vagasTitulares : int, vagasReservas : int, valorQuadra : Decimal) : Partida
   + consultarHistorico() : List<Partida>
+  + consultarProximasPartidas() : List<Partida>
   + consultarPendencias() : List<Pagamento>
 }
 
